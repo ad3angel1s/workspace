@@ -1,0 +1,96 @@
+# Set minimum required version equal to what I have
+cmake_minimum_required (VERSION 3.2.3)
+
+# Define project name and enable C language
+project (CBuild C)
+
+# Sources set individually in case
+set (HELLO_SOURCES         ./src/hello.c )
+set (HELLO_PTHREAD_SOURCES ./src/hello_pthread.c )
+set (BST_SOURCES           ./src/bst.c )
+set (STATIC_ALLOC_SOURCES  ./src/static_alloc.c )
+set (TEST_SCOPE_SOURCES    ./src/test_scope.c )
+
+# Use wildcards with file() and GLOB (best to avoid)
+# file ( GLOB SOURCES "./src/*.c" )
+
+# Set output directory for binaries
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../lib" )
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../lib" )
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../bin" )
+
+# set_target_properties( <target_name>
+#                        PROPERTIES
+#                        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../lib"
+#                        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../lib"
+#                        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../bin"
+# )
+
+# NOTE: We can append _[CONFIG] to the variable/property name to make the output directory apply to a specific configuration
+# (the standard values for config are DEBUG, RELEASE, MINSIZEREL and RELWITHDEBINFO).
+
+
+# check the languages which are currently enabled
+get_property(CMAKE_ENABLED_LANGUAGES GLOBAL PROPERTY ENABLED_LANGUAGES)
+message(STATUS "Enabled languages are: ${CMAKE_ENABLED_LANGUAGES}")
+
+# Set standard versions for CXX or CC based on the enabled languages
+
+# in_list operator is available only on >= 3.3
+#
+# if("CXX" in_list CMAKE_ENABLED_LANGUAGES)
+#    ...
+# elseif("C" in_list CMAKE_ENABLED_LANGUAGES)
+#    ...
+# endif()
+#
+# ...so use the list/find constructs:
+list( FIND CMAKE_ENABLED_LANGUAGES "CXX" _INDEX_CXX )
+list( FIND CMAKE_ENABLED_LANGUAGES "C" _INDEX_C )
+
+if({_INDEX_CXX} GREATER -1)
+   include (CheckCXXCompilerFlag)
+   check_cxx_compiler_flag("-std=c++11" COMPILER_SUPPORTS_CXX11)
+   check_cxx_compiler_flag("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+
+   if(COMPILER_SUPPORTS_CXX11)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+   elseif(COMPILER_SUPPORTS_CXX0X)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+   else()
+      message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler")
+   endif()
+
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+
+elseif({_INDEX_C} GREATER -1)
+ 
+   include(CheckCCompilerFlag)
+   check_c_compiler_flag("-std=c11" COMPILER_SUPPORTS_C11)
+   check_c_compiler_flag("-std=c99" COMPILER_SUPPORTS_C99)
+
+   if(COMPILER_SUPPORTS_C11)
+      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11") 
+   elseif(COMPILER_SUPPORTS_C99)
+      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+   else()
+      message(STATUS "The compiler ${CMAKE_C_COMPILER} has no C99 support. Please use a different C compiler")
+   endif()
+
+   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+
+endif()
+
+# Needed for pthread.h correct building
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
+# Define executable
+add_executable ( hello         ${HELLO_SOURCES} )
+add_executable ( hello_pthread ${HELLO_PTHREAD_SOURCES} )
+add_executable ( bst           ${BST_SOURCES} )
+add_executable ( static_alloc  ${STATIC_ALLOC_SOURCES} )
+add_executable ( test_scope    ${TEST_SCOPE_SOURCES} )
+
+# Specify the library needed for pthread.h
+target_link_libraries(hello_pthread Threads::Threads)
