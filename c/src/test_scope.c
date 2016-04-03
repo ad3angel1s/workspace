@@ -2,9 +2,13 @@
 
 int main()
 {
-    if (int a = 3)
+    int a = 3;
+    
+    if (a == 3)
     {
-	printf("%d\n", a);
+	int b = 4;
+
+	printf("%d %d\n", a, b);
     }
     return 0;
 }

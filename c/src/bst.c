@@ -20,7 +20,7 @@ void insert_node(Node **head, int val)
 	  node->left = NULL;
 	  node->right = NULL;
 	  
-	  printf("Inserting val = %d at addr 0x%x\n", val, (unsigned int) node);
+	  printf("Inserting val = %d at addr 0x%llx\n", val, (unsigned long long int) node);
     }
     else
     {
@@ -30,7 +30,7 @@ void insert_node(Node **head, int val)
 	  }
 	  else
 	  {
-        insert_node( &(*head)->right, val);
+            insert_node( &(*head)->right, val);
 	  }
     }
     return;
@@ -42,15 +42,19 @@ void print_bst( Node **head )
     {
       if ((*head)->right && (*head)->left)
 	  {
-        printf("Node val = %d, right = 0x%x (%d), left = 0x%x (%d)\n", (*head)->val, (unsigned int) (*head)->right, (*head)->right->val, (unsigned int) (*head)->left, (*head)->left->val);
+        printf("Node val = %d, right = 0x%llx (%d), left = 0x%llx (%d)\n", (*head)->val,
+	       (unsigned long long int) (*head)->right, (*head)->right->val,
+	       (unsigned long long int) (*head)->left, (*head)->left->val);
 	  }
 	  else if ((*head)->right)
 	  {
-        printf("Node val = %d, right = 0x%x (%d))\n", (*head)->val, (unsigned int) (*head)->right, (*head)->right->val);		  
+        printf("Node val = %d, right = 0x%llx (%d))\n", (*head)->val,
+	       (unsigned long long int) (*head)->right, (*head)->right->val);
 	  }
 	  else if ((*head)->left)
 	  {
-		printf("Node val = %d, left = 0x%x (%d))\n", (*head)->val, (unsigned int) (*head)->left, (*head)->left->val);	  
+		printf("Node val = %d, left = 0x%llx (%d))\n", (*head)->val,
+		       (unsigned long long int) (*head)->left, (*head)->left->val);
 	  }
 	  else
 	  {
