@@ -2,7 +2,7 @@
 
 int main()
 {
-    char *str = "test";
+    const char *str = "test";
 
     printf("sizeof(\"test\"): %llu\n", sizeof("test"));
 
