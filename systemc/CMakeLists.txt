@@ -2,22 +2,13 @@
 cmake_minimum_required (VERSION 3.2.3)
 
 # Define project name and enable C language
-project (C++Build CXX)
+project (SystemCBuild CXX)
 
 # Sources set individually in case
-set (HELLO_SOURCES         ./src/hello.cc )
-set (BRACKETS_SOURCES      ./src/brackets.cc )
-set (HWUP_SOURCES          ./src/hwup.cc )
-set (IS_SAME_SOURCES       ./src/is_same.cc )
-set (LINKED_LIST_SOURCES   ./src/linked_list.cc )
-set (POLYMORPHISM_SOURCES  ./src/polymorphism.cc )
-set (SIZEOF_SOURCES        ./src/sizeof.cc )
-set (TAG_DISPATCH_SOURCES  ./src/tag_dispatching.cc )
-set (TEMPLATES_SOURCES     ./src/templates.cc )
-set (VECTOR_SOURCES        ./src/vector.cc )
+set (HELLO_SOURCES         ./src/hello_sc.cpp )
 
 # Use wildcards with file() and GLOB (best to avoid)
-# file ( GLOB SOURCES "./src/*.cc" )
+# file ( GLOB SOURCES "./src/*.cpp" )
 
 # Set output directory for binaries
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../lib" )
@@ -95,15 +86,15 @@ else()
 
 endif()
 
+# Provided FindSystemC.cmake module 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+find_package(SystemC REQUIRED)
+
+include_directories("${SystemC_INCLUDE_DIRS}")
+
 # Define executable
-add_executable ( hello        ${HELLO_SOURCES} )
-add_executable ( brackets     ${BRACKETS_SOURCES} )
-add_executable ( hwup         ${HWUP_SOURCES} )
-add_executable ( is_same      ${IS_SAME_SOURCES} )
-add_executable ( linked_list  ${LINKED_LIST_SOURCES} )
-add_executable ( polymorphism ${POLYMORPHISM_SOURCES} )
-add_executable ( sizeof       ${SIZEOF_SOURCES} )
-add_executable ( tag_dispatch ${TAG_DISPATCH_SOURCES} )
-add_executable ( templates    ${TEMPLATES_SOURCES} )
-add_executable ( vector       ${VECTOR_SOURCES} )
+add_executable ( hello_sc ${HELLO_SOURCES} )
+
+# Specify to link against the needed library
+target_link_libraries( hello_sc SystemC::SystemC)
 
