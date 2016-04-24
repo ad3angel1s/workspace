@@ -15,6 +15,7 @@ set (SIZEOF_SOURCES        ./src/sizeof.cc )
 set (TAG_DISPATCH_SOURCES  ./src/tag_dispatching.cc )
 set (TEMPLATES_SOURCES     ./src/templates.cc )
 set (VECTOR_SOURCES        ./src/vector.cc )
+set (SORTING_SOURCES       ./src/sorting.cc )
 
 # Use wildcards with file() and GLOB (best to avoid)
 # file ( GLOB SOURCES "./src/*.cc" )
@@ -106,4 +107,4 @@ add_executable ( sizeof       ${SIZEOF_SOURCES} )
 add_executable ( tag_dispatch ${TAG_DISPATCH_SOURCES} )
 add_executable ( templates    ${TEMPLATES_SOURCES} )
 add_executable ( vector       ${VECTOR_SOURCES} )
-
+add_executable ( sorting      ${SORTING_SOURCES} )
