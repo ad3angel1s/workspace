@@ -1,0 +1,60 @@
+.
+├── c
+│   ├── bin
+│   ├── CMakeLists.txt
+│   ├── inc
+│   │   └── state.h
+│   ├── lib
+│   └── src
+│       ├── bst.c
+│       ├── hello.c
+│       ├── hello_cmocka.c
+│       ├── hello_pthread.c
+│       ├── state.c
+│       ├── static_alloc.c
+│       ├── test_scope.c
+│       └── test_state.c
+├── c++
+│   ├── bin
+│   ├── CMakeLists.txt
+│   ├── inc
+│   ├── lib
+│   └── src
+│       ├── brackets.cc
+│       ├── hello.cc
+│       ├── hwup.cc
+│       ├── is_same.cc
+│       ├── linked_list.cc
+│       ├── polymorphism.cc
+│       ├── reference.cc
+│       ├── sizeof.cc
+│       ├── sorting.cc
+│       ├── tag_dispatching.cc
+│       ├── templates.cc
+│       └── vector.cc
+├── haskell
+│   ├── add.hs
+│   ├── hello.hs
+│   ├── listLength.hs
+│   ├── myBookInfo.hs
+│   ├── myDrop.hs
+│   ├── myNot.hs
+│   ├── nullable.hs
+│   ├── shapeUnion.hs
+│   └── tree.hs
+├── python
+│   ├── list.py
+│   └── sorting.py
+├── README.md
+├── systemc
+│   ├── bin
+│   ├── cmake
+│   │   └── FindSystemC.cmake
+│   ├── CMakeLists.txt
+│   ├── inc
+│   ├── lib
+│   └── src
+│       └── hello_sc.cpp
+└── tree_description.txt
+
+18 directories, 39 files

@@ -10,6 +10,12 @@ set (HELLO_PTHREAD_SOURCES ./src/hello_pthread.c )
 set (BST_SOURCES           ./src/bst.c )
 set (STATIC_ALLOC_SOURCES  ./src/static_alloc.c )
 set (TEST_SCOPE_SOURCES    ./src/test_scope.c )
+set (HELLO_CMOCKA          ./src/hello_cmocka.c )
+set (TEST_STATE            ./src/test_state.c )
+set (STATE                 ./src/state.c )
+
+# Add Include directories
+include_directories ( ./inc )
 
 # Use wildcards with file() and GLOB (best to avoid)
 # file ( GLOB SOURCES "./src/*.c" )
@@ -62,7 +68,7 @@ if(${_INDEX_CXX} GREATER -1)
       message(WARNING "The compiler ${CMAKE_CXX_COMPILER_ID} has no C++11/C++0x support. Please use a different C++ compiler")
    endif()
 
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wpedantic -Werror")
    message(STATUS "C++ compiler flags enabled: ${CMAKE_CXX_FLAGS}")
    
 elseif(${_INDEX_C} GREATER -1)
@@ -81,7 +87,7 @@ elseif(${_INDEX_C} GREATER -1)
       message(WARNING "The compiler ${CMAKE_C_COMPILER_ID} has no C11/C99 support. Please use a different C compiler")
    endif()
 
-   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wpedantic -Werror")
    message(STATUS "C compiler flags enabled: ${CMAKE_C_FLAGS}")
 
 else()
@@ -100,6 +106,27 @@ add_executable ( hello_pthread ${HELLO_PTHREAD_SOURCES} )
 add_executable ( bst           ${BST_SOURCES} )
 add_executable ( static_alloc  ${STATIC_ALLOC_SOURCES} )
 add_executable ( test_scope    ${TEST_SCOPE_SOURCES} )
+add_executable ( hello_cmocka  ${HELLO_CMOCKA} )
+add_executable ( test_state    ${TEST_STATE} )
+
+
+# Define library to be tested by test_state
+add_library ( state ${STATE} )
 
 # Specify the library needed for pthread.h
 target_link_libraries(hello_pthread Threads::Threads)
+
+# Specify the library needed for cmocka.h
+target_link_libraries(hello_cmocka cmocka)
+target_link_libraries(test_state cmocka state)
+
+# Specify the test to be run with CTest (test_name, executable)
+enable_testing()
+add_test( test_state ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_state )
+# Now add a valgrind test case
+add_test( test_state_valgrind valgrind 
+          --error-exitcode=1 
+          --read-var-info=yes
+          --leak-check=full 
+          --show-leak-kinds=all
+          ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_state )

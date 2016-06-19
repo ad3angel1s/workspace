@@ -1,6 +1,13 @@
 #include <iostream>
 using namespace std;
 
+void printArray(int v[], int sz)
+{
+    for (int i=0; i<sz; i++)
+	cout << v[i] << " ";
+    cout << endl;
+}
+
 /* 
  *  Bubble sort:    compare each element and bubble it up
  *  Selection sort: find the minimum and put at the end, work recursively on the remaining array
@@ -30,11 +37,49 @@ void bubbleSort(int v[], int sz)
     }
 }
 
-void printArray(int v[], int sz)
+void insertionSort(int v[], int sz)
 {
-    for (int i=0; i<sz; i++)
-	cout << v[i] << " ";
-    cout << endl;
+    /* using a support array */
+    bool bInPlace = true;
+
+    if (bInPlace)
+    {
+        int u[sz];
+        int usz = 0;
+
+        for (int i=0; i<sz; i++)
+	    u[i] = 0;
+
+        for (int i=0; i<sz; i++)
+        {
+	    for (int j=0; j<sz; j++)
+	    {
+ 	        //printArray(u, sz);
+	    
+	        //cout << v[i] << u[j] << usz << endl;
+	    
+	        if (j == usz)
+	        {
+		    u[j] = v[i];
+		    usz++;
+		    break;
+	        }
+	        else if (u[j] > v[i])
+	        {
+		    for (int k=usz-1; k>=j; k--)
+		        u[k+1] = u[k];
+
+		    u[j] = v[i];
+		    usz++;
+		    break;
+	        }
+	    }
+        }
+
+        for (int i=0; i<sz; i++)
+	    v[i] = u[i];
+
+    }
 }
 
 int main()
@@ -43,8 +88,8 @@ int main()
     int sz  = 7;
 
     printArray(v,sz);
-
-    bubbleSort(v,sz);
+    
+    insertionSort(v,sz);
 
     printArray(v,sz);
 
