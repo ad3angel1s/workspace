@@ -67,7 +67,7 @@ void List::remove()
 	this->pList = NULL;
     }
     
-    printf("Freeing 0x%llx\n", this);
+    printf("Freeing 0x%llx\n", (unsigned long long) this);
     delete this; // delete will call the dtor but we have set it to NULL so just print
     	    
 }
