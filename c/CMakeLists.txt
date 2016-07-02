@@ -120,6 +120,9 @@ target_link_libraries(hello_pthread Threads::Threads)
 target_link_libraries(hello_cmocka cmocka)
 target_link_libraries(test_state cmocka state)
 
+# Specify the library needed for math.h
+target_link_libraries( bst m )
+
 # Specify the test to be run with CTest (test_name, executable)
 enable_testing()
 add_test( test_state ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_state )
