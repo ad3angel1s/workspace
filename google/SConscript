@@ -4,4 +4,4 @@ debug = ARGUMENTS.get('debug', 0)
 if int(debug):
     env.Append(CCFLAGS = '-g')
 
-env.Program(target = 'monitor', source = 'monitor.cc', LIBS=["pthread"])
+env.Program(target = 'genpasswd', source = 'genpasswd.c')
