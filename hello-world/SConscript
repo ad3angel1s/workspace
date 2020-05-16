@@ -1,0 +1,25 @@
+import os
+
+env_options = {
+    "CC"    : "riscv64-unknown-elf-gcc",
+    "CXX"   : "riscv64-unknown-elf-g++",
+    "LD"    : "riscv64-unknown-elf-ld",
+    "AR"    : "riscv64-unknown-elf-ar",
+    "STRIP" : "riscv64-unknown-elf-strip"
+}
+
+env = Environment(**env_options)
+
+env.Append(ENV = {'PATH' : os.environ['PATH']})
+current_dir = Dir('.').srcnode().abspath
+
+env.Append(LINKFLAGS=["-Wl,-T,{}/riscv64-virt.ld".format(current_dir),'-Wl,--gc-sections','-nostartfiles','-nostdlib','-nodefaultlibs'])
+env.Append(CCFLAGS=['-ffreestanding','-O0'])
+
+debug = ARGUMENTS.get('debug', 0)
+if int(debug):
+    env.Append(CCFLAGS = '-g')
+    env.Append(ASFLAGS = '-g')
+
+hello = env.Program(target = 'hello-world', source = ['crt0.S','main.c'])
+env.Depends(hello, "{}/riscv64-virt.ld".format(current_dir))
