@@ -1,0 +1,15 @@
+10 3
+<tag1 value = "HelloWorld" another = "AnotherWorld">
+<tag2 name = "Name1">
+</tag2>
+<tag3 number = "Number2">
+<tag4 otherone = "Ciao" othertwo = "Hello">
+</tag4>
+</tag3>
+</tag1>
+<tag5 last = "Thisone" notlast = "Otherlast">
+</tag5>
+tag1.tag2~name
+tag1~name
+tag1~value
+
