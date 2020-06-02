@@ -8,7 +8,7 @@
 
 /*
  * The regex looks like this:
- * (?:<(\w+)|(\w+) = ("\w+")|>|<\/\w+>)
+ * (?:<(\w+)|(\w+) = "(\w+)"|>|<\/\w+>)
  *
  */
 
@@ -91,24 +91,62 @@ static void print_parsed_structure(Node *parsed_structure, size_t parsed_structu
 
 static Node *matching_node(Node **subnodes, size_t subnodes_size, std::string tag)
 {
+#ifdef DEBUG
+    std::cout << "DBG: Subnodes_size to check is " << subnodes_size << std::endl;
+#endif
   for (int i=0; i<subnodes_size; i++) {
+#ifdef DEBUG
+    std::cout << "DBG: Check if the tag matches on " << subnodes[i] << std::endl;
+#endif
     if (subnodes[i]->tag == tag) {
+#ifdef DEBUG
+      std::cout << "DBG: Found on " << subnodes[i] << std::endl;
+#endif
       return subnodes[i];
     }
   }
+#ifdef DEBUG
+  std::cout << "DBG: Not found" << std::endl;
+#endif
   return NULL;
+}
+
+static void print_request_field(Node *ptr, std::string req_field)
+{
+  auto it_attr = ptr->attributes.begin();
+  while (it_attr != ptr->attributes.end()) {
+    if ((*it_attr).first == req_field) {
+      std::cout << (*it_attr).second << std::endl;
+      return;
+    }
+    it_attr++;
+  }
+  std::cout << "Not Found!" << std::endl;
 }
 
 static void check_parsed_structure(Node *parsed_structure, size_t parsed_structure_size, std::vector<std::string> tags, std::string req_field)
 {
   for (int i=0; i<parsed_structure_size; i++) {
     if (parsed_structure[i].parent == NULL) {
-      Node *n = &parsed_structure[i]; 
-      for (int j=0; j<tags.size(); j++) {
-	if (n = matching_node(n->subnodes, n->subnodes_size, tags[j])) {
+#ifdef DEBUG
+      std::cout << "DBG: Node " << &parsed_structure[i] << " is an anchor node " << std::endl;
+#endif
+      Node fake_root;
+      fake_root.subnodes[0] = &parsed_structure[i];
+      fake_root.subnodes_size = 1;
+      Node *n = &fake_root;
+      for (int j=0; j<tags.size(); ) {
+	n = matching_node(n->subnodes, n->subnodes_size, tags[j]);
+	if (n) {
 #ifdef DEBUG
 	  std::cout << "DBG: Tag " << tags[j] << " matches on node " << n << std::endl;
 #endif
+	  /* Increment the tag counter only when a match is found */
+	  j++;
+	  if (j == tags.size()) {
+	    /* Found a complete tag path, print req_field if that matches */
+            return print_request_field(n, req_field);
+	  }
 	}
       }
     }
@@ -132,7 +170,7 @@ static std::string process_tags(std::string const& s, std::string::size_type *ne
 
 int main(int argc, char *argv[])
 {
-  std::string s(R"((?:<(\w+)|(\w+) = ("\w+")|>|<\/\w+>))");
+  std::string s(R"((?:<(\w+)|(\w+) = "(\w+)\"|>|<\/\w+>))");
   std::regex r(s);
   if (argc != 2) {
     std::cout << "Need to pass an input file" << std::endl;
@@ -149,12 +187,11 @@ int main(int argc, char *argv[])
   std::istringstream iss(read_line);
   int N, Q;
   iss >> N >> Q;
-  std::cout << "N is " << N << " and Q is " << Q << std::endl;
+  //std::cout << "N is " << N << " and Q is " << Q << std::endl;
 
   Node parsed_structure[20];
   size_t parsed_structure_size = 0;
   Node *current_parent = NULL;
-  Node *previous_parent = NULL;
 
   for (int i = 0; i < N; i++) {
     bool end_tag = true;
@@ -221,7 +258,7 @@ int main(int argc, char *argv[])
   }
 
   /* Print the result of the parsing */
-  print_parsed_structure(parsed_structure, parsed_structure_size);
+  //print_parsed_structure(parsed_structure, parsed_structure_size);
   
   for (int i = 0; i < Q; i++) {
     std::getline(infile, read_line);
