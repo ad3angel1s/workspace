@@ -174,7 +174,7 @@ static std::string process_tags(std::string const& s, std::string::size_type *ne
 
 int main(int argc, char *argv[])
 {
-  std::string s(R"((?:<(\w+)|(\w+) = "([\w%]+)\"|>|<\/\w+>))");
+  std::string s(R"((?:<(\w+)|(\w+) = "([\w%!.$]+)\"|>|<\/\w+>))");
   std::regex r(s);
   if (argc != 2) {
     std::cout << "Need to pass an input file" << std::endl;
