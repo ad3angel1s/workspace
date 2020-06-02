@@ -32,10 +32,10 @@
  * inner match, i.e. tagN
  * I want to obtain something similar for the second match
  * as well to extract each submatch and remove the =:
- * (<(\w+)|(\w+) = ("\w+"))
+ * (<(\w+)|(\w+) = "(\w+)")
  * To finalise, I am not interested in the outer group
  * captures, so I can tell to ignore them using ?:
- * (?:<(\w+)|(\w+) = ("\w+))
+ * (?:<(\w+)|(\w+) = "(\w+)")
  * And cycle through all groups found for each match
  *
  * The capturing groups are numbered, so in case the outer
@@ -147,10 +147,14 @@ static void check_parsed_structure(Node *parsed_structure, size_t parsed_structu
 	    /* Found a complete tag path, print req_field if that matches */
             return print_request_field(n, req_field);
 	  }
+	} else {
+	  /* We haven't found it, so this needs to be interrupted and move to next anchor */
+	  j = tags.size();
 	}
       }
     }
   }
+  std::cout << "Not Found!" << std::endl;
 }
 
 static std::string process_tags(std::string const& s, std::string::size_type *new_start)
@@ -170,7 +174,7 @@ static std::string process_tags(std::string const& s, std::string::size_type *ne
 
 int main(int argc, char *argv[])
 {
-  std::string s(R"((?:<(\w+)|(\w+) = "(\w+)\"|>|<\/\w+>))");
+  std::string s(R"((?:<(\w+)|(\w+) = "([\w%]+)\"|>|<\/\w+>))");
   std::regex r(s);
   if (argc != 2) {
     std::cout << "Need to pass an input file" << std::endl;
@@ -258,7 +262,7 @@ int main(int argc, char *argv[])
   }
 
   /* Print the result of the parsing */
-  //print_parsed_structure(parsed_structure, parsed_structure_size);
+  print_parsed_structure(parsed_structure, parsed_structure_size);
   
   for (int i = 0; i < Q; i++) {
     std::getline(infile, read_line);
