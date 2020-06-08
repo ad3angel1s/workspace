@@ -6,3 +6,4 @@ SConscript("longest-common-subsequence/SConscript", variant_dir="build/longest-c
 SConscript("sorting/SConscript", variant_dir="build/sorting", duplicate=0)
 SConscript("hello-world/SConscript", variant_dir="build/hello-world", duplicate=0)
 SConscript("regex/SConscript", variant_dir="build/regex", duplicate=0)
+SConscript("triangle/SConscript", variant_dir="build/triangle", duplicate=0)
