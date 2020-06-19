@@ -8,3 +8,4 @@ SConscript("hello-world/SConscript", variant_dir="build/hello-world", duplicate=
 SConscript("regex/SConscript", variant_dir="build/regex", duplicate=0)
 SConscript("triangle/SConscript", variant_dir="build/triangle", duplicate=0)
 SConscript("list/SConscript", variant_dir="build/list", duplicate=0)
+SConscript("perm/SConscript", variant_dir="build/perm", duplicate=0)
