@@ -1,0 +1,12 @@
+env = Environment()
+
+debug = ARGUMENTS.get('debug', 0)
+optimize = ARGUMENTS.get('optimize', 0)
+
+if int(debug):
+    env.Append(CCFLAGS = '-g')
+
+if int(optimize):
+    env.Append(CCFLAGS = '-O2')
+
+env.Program(target = 'setjmp', source = 'setjmp.c')
