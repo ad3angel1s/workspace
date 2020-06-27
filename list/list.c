@@ -11,15 +11,20 @@
 typedef struct _node {
   int val;
   struct _node *next;
+} node_t;
+
+typedef struct _list {
+  struct _node *head;
 } list_t;
 
-void print_list(list_t *ptr)
+void print_list(list_t list)
 {
-  if (!ptr) {
+  if (!list.head) {
     printf("Empty!\n");
     return;
   }
 
+  node_t *ptr = list.head;
   while (ptr) {
     printf("%2d ", ptr->val);
     ptr = ptr->next;
@@ -27,84 +32,104 @@ void print_list(list_t *ptr)
   printf("\n");
 }
 
-void add_node(list_t **ptr, int val)
+void add_node(list_t *list, int val)
 {
-  DEBUG_PRINT("Add node with value: %d, ptr: 0x%x, *ptr: 0x%x\n", val, ptr, *ptr);
-  if (!*ptr) {
-    *ptr = (list_t *) malloc(sizeof(list_t));
-    (*ptr)->val = val;
-    (*ptr)->next = NULL;
-    DEBUG_PRINT("Added: ptr: 0x%x, *ptr: 0x%x, (*ptr)->val: %d, (*ptr)->next: 0x%x\n", ptr, *ptr, (*ptr)->val, (*ptr)->next);
+  DEBUG_PRINT("Add node with value: %d\n", val);
+  if (!list->head) {
+    list->head = (node_t *) malloc(sizeof(node_t));
+    list->head->val = val;
+    list->head->next = NULL;
+    DEBUG_PRINT("Added head: head: 0x%x, val: %d, next: 0x%x\n", list->head, list->head->val, list->head->next);
     return;
   }
 
-  list_t *tmp = *ptr;
+  node_t *tmp = list->head;
   while (tmp->next) {
     tmp = tmp->next;
   }
 
-  tmp->next = (list_t *) malloc(sizeof(list_t));
+  tmp->next = (node_t *) malloc(sizeof(node_t));
   tmp->next->val = val;
   tmp->next->next = NULL;
-  DEBUG_PRINT("Added: ptr: 0x%x, tmp: 0x%x, tmp->next->val: %d, tmp>next->next: 0x%x\n", ptr, tmp, tmp->next->val, tmp->next->next);
+  DEBUG_PRINT("Added: node: 0x%x, val: %d, next: 0x%x\n", tmp->next, tmp->next->val, tmp->next->next);
 }
 
-void add_node_ordered(list_t **ptr, int val)
+void add_node_ordered(list_t *list, int val)
 {
-  if (!*ptr) {
-    return add_node(ptr, val);
+  if (!list->head) {
+    return add_node(list, val);
   }
 
-  list_t *tmp = *ptr;
+  node_t *tmp = list->head;
   while (tmp->next && tmp->next->val < val) {
     tmp = tmp->next;
   }
 
-  list_t *next = tmp->next;
+  /* Check if we are still on the head, if so, create a new head or create a new next */
+  if (tmp == list->head) {
+    if (tmp->val > val) {
+      list->head = (node_t *) malloc(sizeof(node_t));
+      list->head->val = val;
+      list->head->next = tmp;
+    } else {
+      list->head->next = (node_t *) malloc(sizeof(node_t));
+      list->head->next->val = val;
+      list->head->next->next = NULL;
+    }
+    return;
+  }
+
+  node_t *next = tmp->next;
+  /* We stopped because we didn't have any other value to check, so enqueue  */
   if (!tmp->next) {
-    tmp->next = (list_t *) malloc(sizeof(list_t));
+    tmp->next = (node_t *) malloc(sizeof(node_t));
     tmp->next->val = val;
     tmp->next->next = NULL;
     return;
   }
 
-  if (tmp == *ptr) {
-    list_t *previous_head = *ptr;
-    *ptr = (list_t *) malloc(sizeof(list_t));
-    (*ptr)->val = val;
-    (*ptr)->next = previous_head;
-    return;
-  }
-
-  tmp->next = (list_t *) malloc(sizeof(list_t));
+  /* Otherwise insert before */
+  tmp->next = (node_t *) malloc(sizeof(node_t));
   tmp->next->val = val;
   tmp->next->next = next;
 }
 
-void merge_node(list_t **ptr1, list_t **ptr2)
+void merge_node(list_t *list1, list_t *list2)
 {
-  list_t *tmp = *ptr2;
-  while (*ptr2 = (*ptr2)->next) {
+  node_t *tmp = list2->head;
+  if (tmp) {
+    list2->head = tmp->next;
+  } else {
+    list2->head = NULL;
+  }
+  /* at this point, the node that I want to insert is pointed by tmp and list2's head is popped */
+  while (tmp) {
+    DEBUG_PRINT("Inserting %d into the first list\n", tmp->val);
     /* iterate over the first list to find where to insert */
-    list_t *curr = *ptr1;
-    list_t *prev = NULL;
+    node_t *curr = list1->head;
+    node_t *prev = NULL;
     while (curr && curr->val < tmp->val) {
       prev = curr;
       curr = curr->next;
     }
 
-    list_t *next;
     if (!prev) {
-      *ptr1 = tmp;
-      (*ptr1)->next = curr;
+      /* curr->val must be greater (or equal) than tmp->val, so tmp becomes the new head */
+      tmp->next = curr;
+      list1->head = tmp;
     } else {
-      next = prev->next;
+      /* tmp must be the new curr, i.e. prev->next */
+      tmp->next = curr; /* prev->next */
       prev->next = tmp;
-      prev->next->next = next;
     }
 
-    /* Move to the next node to inser in the second list */
-    tmp = *ptr2;
+    /* Move to the next node to insert in the second list */
+    tmp = list2->head;
+    if (tmp) {
+      list2->head = tmp->next;
+    } else {
+      list2->head = NULL;
+    }
   }
 }
 
@@ -115,34 +140,40 @@ int main(void)
   size_t len = sizeof(values)/sizeof(int);
   size_t len2 = sizeof(values2)/sizeof(int);
   int i;
-  list_t *ptr = NULL;
-  list_t *ptr2 = NULL;
+  list_t list1 = {.head = NULL};
+  list_t list2 = {.head = NULL};
 
   printf("Original list: ");
-  print_list(ptr);
+  print_list(list1);
   for (i=0; i<len; i++) {
-    add_node(&ptr, values[i]);
+    add_node(&list1, values[i]);
   }
   printf("List after normal insertions: ");
-  print_list(ptr);
-  add_node_ordered(&ptr, 9);
+  print_list(list1);
+  add_node_ordered(&list1, 9);
   printf("List after ordered insertion: ");
-  print_list(ptr);
+  print_list(list1);
 
   for (i=0; i<len2; i++) {
-    add_node_ordered(&ptr2, values2[i]);
+    add_node_ordered(&list2, values2[i]);
   }
   printf("Another list after ordered insertions: ");
-  print_list(ptr2);
-  add_node_ordered(&ptr2, -2);
+  print_list(list2);
+  add_node_ordered(&list2, -2);
   printf("Another list with new head ordered: ");
-  print_list(ptr2);
+  print_list(list2);
 
-  merge_node(&ptr, &ptr2);
+  merge_node(&list1, &list2);
   printf("New first list: ");
-  print_list(ptr);
+  print_list(list1);
   printf("New second list: ");
-  print_list(ptr2);
+  print_list(list2);
+
+  merge_node(&list2, &list1);
+  printf("Swapped first list: ");
+  print_list(list1);
+  printf("Swapped second list: ");
+  print_list(list2);
 
   return 0;
 }
