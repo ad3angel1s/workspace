@@ -1,0 +1,14 @@
+env = Environment()
+
+systemc_install_dir = "/home/antonio/Books/SystemC/systemc-2.3.3/"
+systemc_include_dir = systemc_install_dir + "include"
+systemc_lib_dir = systemc_install_dir + "lib-linux64"
+
+env.Append(LINKFLAGS = "-Wl,-rpath," + systemc_lib_dir)
+env.Append(CCFLAGS = "-I" + systemc_include_dir)
+
+debug = ARGUMENTS.get('debug', 0)
+if int(debug):
+    env.Append(CCFLAGS = '-g')
+
+env.Program(target = 'systemc-hello-world', source = 'main.cpp', LIBS=["systemc"], LIBPATH = [systemc_lib_dir])
