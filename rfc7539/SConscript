@@ -1,0 +1,7 @@
+env = Environment()
+
+debug = ARGUMENTS.get('debug', 0)
+if int(debug):
+    env.Append(CCFLAGS = '-g')
+
+env.Program(target = 'chacha20_poly1305', source = 'main.cc', LIBS=["fmt"])
