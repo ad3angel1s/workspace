@@ -1,0 +1,9 @@
+project('long_multiplication','cpp',
+    version : '0.1',
+    license : 'MIT')
+dep_version = meson.project_version()
+project_dep = declare_dependency(
+    version : dep_version)
+set_variable(meson.project_name() + '_dep', project_dep)
+executable('long_multiplication.out','main.cc')
+
